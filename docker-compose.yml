@@ -1,0 +1,17 @@
+services:
+
+  nmap_exporter:
+    container_name: nmap_exporter
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - DEBUG=true
+      - WLED_IP_LIST=10.0.1.129,10.0.1.150,10.0.1.179,10.0.1.153
+    ports:
+      - "9292:9292"
+    stdin_open: true
+    tty: true
