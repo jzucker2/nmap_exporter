@@ -27,12 +27,6 @@ class Scraper(object):
         return cls(NmapClient.get_client())
 
     @classmethod
-    def default_nmap_ip(cls):
-        # TODO: consolidate env imports
-        return os.environ.get('DEFAULT_WLED_IP',
-                              "10.0.1.179")
-
-    @classmethod
     def get_default_scrape_interval(cls):
         return int(DEFAULT_NMAP_SCRAPE_INTERVAL_SECONDS)
 
