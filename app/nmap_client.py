@@ -1,4 +1,5 @@
 import os
+from nmap import PortScanner
 from .utils import LogHelper
 # from .metrics import Metrics
 
@@ -15,3 +16,11 @@ class NmapClient(object):
     def get_nmap_scan_host(cls):
         return os.environ.get('NMAP_SCAN_HOST',
                               '127.0.0.1')
+
+    def __init__(self):
+        super().__init__()
+        self._scanner = PortScanner()
+
+    @property
+    def scanner(self):
+        return self._scanner
