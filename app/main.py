@@ -9,7 +9,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 
 from .utils import LogHelper
-# from .nmap_client import NmapClient
+from .nmap_client import NmapClient
 from .scraper import Scraper
 
 
@@ -46,6 +46,7 @@ def read_item(item_id: int, q: Union[str, None] = None):
 @app.get("/test")
 async def simple_test():
     await asyncio.sleep(0)
+    NmapClient.get_client().scan()
     return {"message": "Hello World"}
 
 

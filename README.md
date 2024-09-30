@@ -90,15 +90,15 @@ Notes about dev work here.
 curl -i "http://localhost:9292/healthz" \
     -H "Content-Type: application/json"
 
-# simple WLED test
+# simple nmap scan test
 curl -i "http://localhost:9292/test" \
     -H "Content-Type: application/json"
 
-# now test with prometheus metrics on default WLED instance
+# now test with prometheus metrics on default nmap host
 curl -i "http://localhost:9292/prometheus/default" \
     -H "Content-Type: application/json"
 
-# now test with prometheus metrics for all WLED instances (set in env var for now)
+# now test with prometheus metrics for all nmap hosts (set in env var for now)
 curl -i "http://localhost:9292/prometheus/all" \
     -H "Content-Type: application/json"
 ```

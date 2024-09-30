@@ -15,6 +15,7 @@ FROM python:3.12-slim AS runner
 
 RUN apt-get update -y && apt-get install -y \
         curl \
+        nmap \
     && apt-get clean
 
 COPY --from=builder /code/wheels /wheels
