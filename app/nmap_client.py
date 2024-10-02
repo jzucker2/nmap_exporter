@@ -52,8 +52,8 @@ class NmapClient(object):
             version, subversion = self.scanner.nmap_version()
             return NmapVersionInfo(str(version), str(subversion))
         except Exception as e:
-            log.info(f'nmap trying to get version, got e: {e}')
-        return (None, None)
+            log.error(f'nmap trying to get version, got e: {e}')
+            return (None, None)
 
     def _scan(self, host, port_range=None):
         if not port_range:
