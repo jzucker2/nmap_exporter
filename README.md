@@ -90,16 +90,16 @@ Notes about dev work here.
 curl -i "http://localhost:9292/healthz" \
     -H "Content-Type: application/json"
 
-# simple nmap scan test
-curl -i "http://localhost:9292/test" \
+# simple nmap scan of localhost
+curl -i "http://localhost:9292/scan/local" \
     -H "Content-Type: application/json"
 
-# now test with prometheus metrics on default nmap host
+# simple nmap scan test of default scan host (set in env var for now)
+curl -i "http://localhost:9292/scan/test" \
+    -H "Content-Type: application/json"
+
+# now test with prometheus metrics on default nmap host (set in env var for now)
 curl -i "http://localhost:9292/prometheus/default" \
-    -H "Content-Type: application/json"
-
-# now test with prometheus metrics for all nmap hosts (set in env var for now)
-curl -i "http://localhost:9292/prometheus/all" \
     -H "Content-Type: application/json"
 ```
 
