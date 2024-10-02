@@ -42,8 +42,14 @@ class Scraper(object):
         with Metrics.SCRAPER_SCRAPE_SELF_EXCEPTIONS.count_exceptions():
             with Metrics.SCRAPER_SCRAPE_SELF_TIME.time():
                 current_version = version
+                log.debug(f'scrape_self current_version: {current_version}')
+                nmap_version_info  = self.nmap_client.get_version()
+                log.debug(f'scrape_self current_version: {current_version} '
+                          f'with nmap_version_info: {nmap_version_info}')
                 Metrics.NMAP_INSTANCE_INFO.labels(
                     version=current_version,
+                    nmap_version=nmap_version_info.nmap_version or "",
+                    nmap_subversion=nmap_version_info.nmap_subversion or "",
                 ).set(1)
 
     async def scrape_scan_host(self, scan_host):

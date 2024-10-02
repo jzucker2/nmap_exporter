@@ -5,11 +5,15 @@ from prometheus_client import Gauge, Counter, Summary
 class MetricsLabels(Enum):
     SCAN_HOST = 'scan_host'
     VERSION = 'version'
+    NMAP_VERSION = 'nmap_version'
+    NMAP_SUBVERSION = 'nmap_subversion'
 
     @classmethod
     def nmap_instance_info_labels(cls):
         return list([
             cls.VERSION.value,
+            cls.NMAP_VERSION.value,
+            cls.NMAP_SUBVERSION.value,
         ])
 
     @classmethod

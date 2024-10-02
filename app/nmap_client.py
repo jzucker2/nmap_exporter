@@ -1,11 +1,15 @@
 import asyncio
 import os
+from collections import namedtuple
 from nmap import PortScanner
 from .utils import LogHelper
 from .metrics import Metrics
 
 
 log = LogHelper.get_env_logger(__name__)
+
+
+NmapVersionInfo = namedtuple("NmapVersionInfo", ["nmap_version", "nmap_subversion"])
 
 
 class NmapClient(object):
@@ -27,8 +31,16 @@ class NmapClient(object):
         self._scanner = PortScanner()
 
     @property
-    def scanner(self):
+    def scanner(self) -> PortScanner:
         return self._scanner
+
+    def get_version(self) -> NmapVersionInfo:
+        try:
+            version, subversion = self.scanner.nmap_version()
+            return NmapVersionInfo(str(version), str(subversion))
+        except Exception as e:
+            log.info(f'nmap trying to get version, got e: {e}')
+        return (None, None)
 
     def _scan(self, host):
         log.info(f'Going to scan host: {host}')
