@@ -9,7 +9,10 @@ from .metrics import Metrics
 log = LogHelper.get_env_logger(__name__)
 
 
-NmapVersionInfo = namedtuple("NmapVersionInfo", ["nmap_version", "nmap_subversion"])
+NmapVersionInfo = namedtuple(
+    "NmapVersionInfo",
+    ["nmap_version", "nmap_subversion"]
+)
 
 
 class NmapClient(object):

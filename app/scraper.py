@@ -43,7 +43,7 @@ class Scraper(object):
             with Metrics.SCRAPER_SCRAPE_SELF_TIME.time():
                 current_version = version
                 log.debug(f'scrape_self current_version: {current_version}')
-                nmap_version_info  = self.nmap_client.get_version()
+                nmap_version_info = self.nmap_client.get_version()
                 log.debug(f'scrape_self current_version: {current_version} '
                           f'with nmap_version_info: {nmap_version_info}')
                 Metrics.NMAP_INSTANCE_INFO.labels(
