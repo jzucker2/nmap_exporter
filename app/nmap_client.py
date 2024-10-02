@@ -37,7 +37,7 @@ class NmapClient(object):
     @classmethod
     def get_nmap_default_scan_timeout_seconds(cls):
         return int(os.environ.get('NMAP_DEFAULT_SCAN_TIMEOUT_SECONDS',
-                                  300))
+                                  600))
 
     def __init__(self):
         super().__init__()
@@ -59,23 +59,27 @@ class NmapClient(object):
         log.info('+++++++++++++++++++++++++++++++++++++++')
         log.info(f'default_scanner_callback => '
                  f'host: {host}, scan_result: {scan_result}')
-        self._parse_scan_result(scan_result)
+        self._parse_scan_result(host, scan_result)
 
-    def _parse_scan_result(self, scan_result):
-        log.info(f'scan_result: {scan_result}')
-        log.info(f'scan command_line: {self.scanner.command_line()}')
+    def _parse_scanned_host_result(self, host, host_result):
+        log.info(f'Host : {host} ({host_result.hostname()})')
+        log.info(f'State : {host_result.state()}')
+        for proto in host_result.all_protocols():
+            log.info('----------')
+            log.info(f'Protocol : {proto}')
+            lport = host_result[proto].keys()
+            lport.sort()
+            for port in lport:
+                port_state = host_result[proto][port]['state']
+                log.info(f'port : {port}\tstate : {port_state}')
+
+    def _parse_scan_result(self, scan_host, scan_result):
+        log.debug(f'parse for scan_host: {scan_host} '
+                  f'and scan_result: {scan_result}')
         for host in self.scanner.all_hosts():
             log.info('----------------------------------------------------')
-            log.info(f'Host : {host} ({self.scanner[host].hostname()})')
-            log.info(f'State : {self.scanner[host].state()}')
-            for proto in self.scanner[host].all_protocols():
-                log.info('----------')
-                log.info(f'Protocol : {proto}')
-                lport = self.scanner[host][proto].keys()
-                lport.sort()
-                for port in lport:
-                    port_state = self.scanner[host][proto][port]['state']
-                    log.info(f'port : {port}\tstate : {port_state}')
+            host_result = self.scanner[host]
+            self._parse_scanned_host_result(host, host_result)
 
     def _scan(self, host, port_range=None):
         if not port_range:
@@ -86,7 +90,8 @@ class NmapClient(object):
             ports=port_range,
             timeout=self.get_nmap_default_scan_timeout_seconds(),
         )
-        self._parse_scan_result(scan_result)
+        log.debug(f'scan command_line: {self.scanner.command_line()}')
+        self._parse_scan_result(host, scan_result)
 
     async def scan(self, scan_host):
         """Don't overcomplicate this one. Simple usage like the dep docs"""

@@ -11,7 +11,7 @@ log = LogHelper.get_env_logger(__name__)
 
 DEFAULT_NMAP_SCRAPE_INTERVAL_SECONDS = int(os.environ.get(
     'DEFAULT_NMAP_SCRAPE_INTERVAL_SECONDS',
-    180))
+    300))
 
 
 class ScraperException(Exception):
