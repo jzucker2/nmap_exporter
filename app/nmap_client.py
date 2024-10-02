@@ -55,15 +55,13 @@ class NmapClient(object):
             log.error(f'nmap trying to get version, got e: {e}')
             return (None, None)
 
-    def _scan(self, host, port_range=None):
-        if not port_range:
-            port_range = self.get_nmap_default_scan_port_range()
-        log.info(f'Going to scan host: {host} with port_range: {port_range}')
-        scan_result = self.scanner.scan(
-            hosts=host,
-            ports=port_range,
-            timeout=self.get_nmap_default_scan_timeout_seconds(),
-        )
+    def default_scanner_callback(self, host, scan_result):
+        log.info('+++++++++++++++++++++++++++++++++++++++')
+        log.info(f'default_scanner_callback => '
+                 f'host: {host}, scan_result: {scan_result}')
+        self._parse_scan_result(scan_result)
+
+    def _parse_scan_result(self, scan_result):
         log.info(f'scan_result: {scan_result}')
         log.info(f'scan command_line: {self.scanner.command_line()}')
         for host in self.scanner.all_hosts():
@@ -78,6 +76,17 @@ class NmapClient(object):
                 for port in lport:
                     port_state = self.scanner[host][proto][port]['state']
                     log.info(f'port : {port}\tstate : {port_state}')
+
+    def _scan(self, host, port_range=None):
+        if not port_range:
+            port_range = self.get_nmap_default_scan_port_range()
+        log.info(f'Going to scan host: {host} with port_range: {port_range}')
+        scan_result = self.scanner.scan(
+            hosts=host,
+            ports=port_range,
+            timeout=self.get_nmap_default_scan_timeout_seconds(),
+        )
+        self._parse_scan_result(scan_result)
 
     async def scan(self, scan_host):
         """Don't overcomplicate this one. Simple usage like the dep docs"""
