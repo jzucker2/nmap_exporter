@@ -26,6 +26,16 @@ class NmapClient(object):
         return os.environ.get('NMAP_DEFAULT_SCAN_HOST',
                               '10.0.0.0/24')
 
+    @classmethod
+    def get_nmap_default_scan_port_range(cls):
+        return os.environ.get('NMAP_DEFAULT_SCAN_PORT_RANGE',
+                              '22-443')
+
+    @classmethod
+    def get_nmap_default_scan_timeout_seconds(cls):
+        return int(os.environ.get('NMAP_DEFAULT_SCAN_TIMEOUT_SECONDS',
+                                  300))
+
     def __init__(self):
         super().__init__()
         self._scanner = PortScanner()
@@ -42,10 +52,15 @@ class NmapClient(object):
             log.info(f'nmap trying to get version, got e: {e}')
         return (None, None)
 
-    def _scan(self, host):
-        log.info(f'Going to scan host: {host}')
+    def _scan(self, host, port_range=None):
+        if not port_range:
+            port_range = self.get_nmap_default_scan_port_range()
+        log.info(f'Going to scan host: {host} with port_range: {port_range}')
         scan_result = self.scanner.scan(
-            host, '22-443')
+            hosts=host,
+            ports=port_range,
+            timeout=self.get_nmap_default_scan_timeout_seconds(),
+        )
         log.info(f'scan_result: {scan_result}')
         log.info(f'scan command_line: {self.scanner.command_line()}')
         for host in self.scanner.all_hosts():
