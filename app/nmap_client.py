@@ -78,4 +78,4 @@ class NmapClient(object):
             scan_host=scan_host,
         ).inc()
         log.info(f"nmap simple scan test scanning scan_host: {scan_host}")
-        self.scan_default_host()
+        await self.scan_default_host()

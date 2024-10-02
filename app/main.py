@@ -1,4 +1,3 @@
-import asyncio
 from typing import Union
 
 from fastapi import FastAPI
@@ -51,14 +50,12 @@ async def simple_scan_test():
 
 @app.get("/scan/local")
 async def scan_local():
-    await asyncio.sleep(0)
     await NmapClient.get_client().scan_local_host()
     return {"message": "Hello World"}
 
 
 @app.get("/prometheus/default")
 async def prometheus_default():
-    await asyncio.sleep(0)
     await Scraper.get_client().scrape_default_scan_host()
     return {"message": "Hello World"}
 
