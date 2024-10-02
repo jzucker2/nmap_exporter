@@ -43,22 +43,23 @@ def read_item(item_id: int, q: Union[str, None] = None):
 # real stuff here
 
 
-@app.get("/test")
-async def simple_test():
+@app.get("/scan/test")
+async def simple_scan_test():
+    await NmapClient.get_client().simple_scan_test()
+    return {"message": "Hello World"}
+
+
+@app.get("/scan/local")
+async def scan_local():
     await asyncio.sleep(0)
-    NmapClient.get_client().scan()
+    await NmapClient.get_client().scan_local_host()
     return {"message": "Hello World"}
 
 
 @app.get("/prometheus/default")
 async def prometheus_default():
     await asyncio.sleep(0)
-    return {"message": "Hello World"}
-
-
-@app.get("/prometheus/all")
-async def prometheus_scrape_all():
-    await asyncio.sleep(0)
+    await Scraper.get_client().scrape_default_scan_host()
     return {"message": "Hello World"}
 
 
@@ -68,4 +69,4 @@ async def perform_full_routine_metrics_scrape() -> None:
     log.debug(f"Going to perform full scrape of all metrics "
               f"(interval: {Scraper.get_default_scrape_interval()}) "
               f"=========>")
-    await asyncio.sleep(0)
+    await Scraper.get_client().perform_full_scrape()
