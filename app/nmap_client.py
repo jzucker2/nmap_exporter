@@ -56,7 +56,7 @@ class NmapClient(object):
             scan_host=scan_host,
         ).inc()
         log.info(f"nmap scanning scan_host: {scan_host}")
-        self.scan(scan_host)
+        self._scan(scan_host)
 
     async def scan_default_host(self):
         """Don't overcomplicate this one. Simple usage like the dep docs"""
