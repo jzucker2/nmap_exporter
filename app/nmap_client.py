@@ -1,7 +1,7 @@
 import asyncio
 import os
 from collections import namedtuple
-from nmap import PortScanner
+from nmap import PortScannerAsync
 from .utils import LogHelper
 from .metrics import Metrics
 
@@ -41,15 +41,15 @@ class NmapClient(object):
 
     def __init__(self):
         super().__init__()
-        self._scanner = PortScanner()
+        self._scanner = PortScannerAsync()
 
     @property
-    def scanner(self) -> PortScanner:
+    def scanner(self) -> PortScannerAsync:
         return self._scanner
 
     def get_version(self) -> NmapVersionInfo:
         try:
-            version, subversion = self.scanner.nmap_version()
+            version, subversion = self.scanner._nm.nmap_version()
             return NmapVersionInfo(str(version), str(subversion))
         except Exception as e:
             log.error(f'nmap trying to get version, got e: {e}')
@@ -61,7 +61,8 @@ class NmapClient(object):
                  f'host: {host}, scan_result: {scan_result}')
         self._parse_scan_result(host, scan_result)
 
-    def _parse_scanned_host_result(self, host, host_result):
+    @classmethod
+    def _parse_scanned_host_result(cls, host, host_result):
         log.info(f'Host : {host} ({host_result.hostname()})')
         log.info(f'State : {host_result.state()}')
         for proto in host_result.all_protocols():
@@ -73,25 +74,31 @@ class NmapClient(object):
                 port_state = host_result[proto][port]['state']
                 log.info(f'port : {port}\tstate : {port_state}')
 
-    def _parse_scan_result(self, scan_host, scan_result):
+    @classmethod
+    def _parse_scan_result(cls, scan_host, scan_result):
         log.debug(f'parse for scan_host: {scan_host} '
-                  f'and scan_result: {scan_result}')
-        for host in self.scanner.all_hosts():
+                  f'and scan_result ({type(scan_result)}) '
+                  f'=> scan_result: {scan_result}')
+        all_hosts_results = scan_result["scan"]
+        log.info(f'parsing all_hosts_results: {all_hosts_results}')
+        for host, host_result in all_hosts_results.items():
             log.info('----------------------------------------------------')
-            host_result = self.scanner[host]
-            self._parse_scanned_host_result(host, host_result)
+            cls._parse_scanned_host_result(host, host_result)
 
     def _scan(self, host, port_range=None):
         if not port_range:
             port_range = self.get_nmap_default_scan_port_range()
         log.info(f'Going to scan host: {host} with port_range: {port_range}')
-        scan_result = self.scanner.scan(
+        self.scanner.scan(
             hosts=host,
             ports=port_range,
             timeout=self.get_nmap_default_scan_timeout_seconds(),
+            callback=self.default_scanner_callback,
         )
-        log.debug(f'scan command_line: {self.scanner.command_line()}')
-        self._parse_scan_result(host, scan_result)
+        while self.scanner.still_scanning():
+            log.info("Scanner waiting >>>")
+            self.scanner.wait(2)
+        log.info('scanner is done!')
 
     async def scan(self, scan_host):
         """Don't overcomplicate this one. Simple usage like the dep docs"""

@@ -45,18 +45,21 @@ def read_item(item_id: int, q: Union[str, None] = None):
 @app.get("/scan/test")
 async def simple_scan_test():
     await NmapClient.get_client().simple_scan_test()
+    log.info('Done with simple_scan_test')
     return {"message": "Hello World"}
 
 
 @app.get("/scan/local")
 async def scan_local():
     await NmapClient.get_client().scan_local_host()
+    log.info('Done with scan_local')
     return {"message": "Hello World"}
 
 
 @app.get("/prometheus/default")
 async def prometheus_default():
     await Scraper.get_client().scrape_default_scan_host()
+    log.info('Done with prometheus_default')
     return {"message": "Hello World"}
 
 
@@ -67,3 +70,4 @@ async def perform_full_routine_metrics_scrape() -> None:
               f"(interval: {Scraper.get_default_scrape_interval()}) "
               f"=========>")
     await Scraper.get_client().perform_full_scrape()
+    log.info('Done with perform_full_routine_metrics_scrape')
