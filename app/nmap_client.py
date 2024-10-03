@@ -60,7 +60,12 @@ class NmapClient(object):
             log.error(f'nmap trying to get version, got e: {e}')
             return (None, None)
 
-    def _parse_scanned_host_proto_result(self, host, host_result, proto):
+    def _parse_scanned_host_proto_result(
+            self,
+            host,
+            hostname,
+            host_result,
+            proto):
         log.info('----------')
         log.info(f'({host} => Protocol : {proto}')
         lport = list(host_result[proto].keys())
@@ -70,7 +75,12 @@ class NmapClient(object):
             port_state = host_result[proto][port]['state']
             log.info(f'port : {port}\tstate : {port_state}')
             if self._scan_port_callback:
-                self._scan_port_callback(host, proto, port, port_state)
+                self._scan_port_callback(
+                    host,
+                    hostname,
+                    proto,
+                    port,
+                    port_state)
 
     def _parse_scanned_host_result(self, host, host_result):
         hostname = host_result.hostname()
@@ -85,6 +95,7 @@ class NmapClient(object):
             try:
                 self._parse_scanned_host_proto_result(
                     host,
+                    hostname,
                     host_result,
                     proto)
             except AttributeError as ae:
