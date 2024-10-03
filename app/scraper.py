@@ -61,6 +61,7 @@ class Scraper(object):
                 scan_host=scan_host,
             ).time():
                 log.info(f"nmap scanning scan_host: {scan_host}")
+                await self.nmap_client.scan(scan_host)
 
     async def scrape_local_scan_host(self):
         scan_host = self.nmap_client.get_local_scan_host()

@@ -56,17 +56,27 @@ class NmapClient(object):
             return (None, None)
 
     @classmethod
+    def _parse_scanned_host_proto_result(cls, host, host_result, proto):
+        log.info('----------')
+        log.info(f'({host} => Protocol : {proto}')
+        lport = host_result[proto].keys()
+        lport.sort()
+        for port in lport:
+            port_state = host_result[proto][port]['state']
+            log.info(f'port : {port}\tstate : {port_state}')
+
+    @classmethod
     def _parse_scanned_host_result(cls, host, host_result):
         log.info(f'Host : {host} ({host_result.hostname()})')
         log.info(f'State : {host_result.state()}')
         for proto in host_result.all_protocols():
-            log.info('----------')
-            log.info(f'Protocol : {proto}')
-            lport = host_result[proto].keys()
-            lport.sort()
-            for port in lport:
-                port_state = host_result[proto][port]['state']
-                log.info(f'port : {port}\tstate : {port_state}')
+            try:
+                cls._parse_scanned_host_proto_result(
+                    host,
+                    host_result,
+                    proto)
+            except AttributeError as ae:
+                log.error(f'host: {host} parsing proto: {proto} got ae: {ae}')
 
     @classmethod
     def _parse_scan_result(cls, scan_host, scan_result):
