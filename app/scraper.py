@@ -22,9 +22,15 @@ class MissingIPListScraperException(ScraperException):
     pass
 
 
+def scan_host_callback(host, hostname, state):
+    pass
+
+
 class Scraper(object):
     @classmethod
-    def get_client(cls):
+    def get_client(cls, scan_host_callback=None):
+        if not scan_host_callback:
+            scan_host_callback = scan_host_callback
         return cls(NmapClient.get_client())
 
     @classmethod

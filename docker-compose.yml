@@ -8,8 +8,9 @@ services:
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
-#    environment:
+    environment:
 #      - DEBUG=true
+      - NMAP_DEFAULT_SCAN_HOST=10.0.1.0/24
     ports:
       - "9292:9292"
     stdin_open: true

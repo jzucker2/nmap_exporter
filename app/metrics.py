@@ -63,3 +63,9 @@ class Metrics(object):
         'Details about the actual nmap scraper instance (this app)',
         MetricsLabels.nmap_instance_info_labels()
     )
+
+    NMAP_HOST_STATE = Gauge(
+        'nmap_scanned_host_state',
+        'State for a nmap scanned host result',
+        MetricsLabels.nmap_instance_info_labels()
+    )

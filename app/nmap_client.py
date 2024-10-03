@@ -17,8 +17,8 @@ NmapVersionInfo = namedtuple(
 
 class NmapClient(object):
     @classmethod
-    def get_client(cls):
-        return cls()
+    def get_client(cls, scan_host_callback=None):
+        return cls(scan_host_callback=scan_host_callback)
 
     @classmethod
     def get_local_scan_host(cls):
@@ -39,8 +39,9 @@ class NmapClient(object):
         return int(os.environ.get('NMAP_DEFAULT_SCAN_TIMEOUT_SECONDS',
                                   600))
 
-    def __init__(self):
+    def __init__(self, scan_host_callback=None):
         super().__init__()
+        self._scan_host_callback = scan_host_callback
         self._scanner = PortScannerAsync()
 
     @property
@@ -66,22 +67,25 @@ class NmapClient(object):
             port_state = host_result[proto][port]['state']
             log.info(f'port : {port}\tstate : {port_state}')
 
-    @classmethod
-    def _parse_scanned_host_result(cls, host, host_result):
-        log.info(f'Host : {host} ({host_result.hostname()})')
-        log.info(f'State : {host_result.state()}')
+    def _parse_scanned_host_result(self, host, host_result):
+        hostname = host_result.hostname()
+        state = host_result.state()
+        log.info(f'Host : {host} ({hostname})')
+        log.info(f'State : {state}')
+        if self._scan_host_callback:
+            log.info('Calling _scan_host_callback')
+            self._scan_host_callback(host, hostname, state)
         log.info(f'{host} => {host_result.all_protocols()}')
         for proto in host_result.all_protocols():
             try:
-                cls._parse_scanned_host_proto_result(
+                self._parse_scanned_host_proto_result(
                     host,
                     host_result,
                     proto)
             except AttributeError as ae:
                 log.error(f'host: {host} parsing proto: {proto} got ae: {ae}')
 
-    @classmethod
-    def _parse_scan_result(cls, scan_host, scan_result):
+    def _parse_scan_result(self, scan_host, scan_result):
         log.debug(f'parse for scan_host: {scan_host} '
                   f'and scan_result ({type(scan_result)}) '
                   f'=> scan_result: {scan_result}')
@@ -89,7 +93,7 @@ class NmapClient(object):
         log.debug(f'parsing all_hosts_results: {all_hosts_results}')
         for host, host_result in all_hosts_results.items():
             log.debug('----------------------------------------------------')
-            cls._parse_scanned_host_result(host, host_result)
+            self._parse_scanned_host_result(host, host_result)
             log.info(f'done with scanned host: {host}')
 
     def default_scanner_callback(self, host, scan_result):
