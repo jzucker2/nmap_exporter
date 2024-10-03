@@ -2,6 +2,7 @@ services:
 
   nmap_exporter:
     container_name: nmap_exporter
+#    image: ghcr.io/jzucker2/nmap_exporter:pr-5
     build:
       context: .
       dockerfile: Dockerfile

@@ -7,6 +7,9 @@ class MetricsLabels(Enum):
     VERSION = 'version'
     NMAP_VERSION = 'nmap_version'
     NMAP_SUBVERSION = 'nmap_subversion'
+    HOST = 'host'
+    HOSTNAME = 'hostname'
+    STATE = 'state'
 
     @classmethod
     def nmap_instance_info_labels(cls):
@@ -20,6 +23,14 @@ class MetricsLabels(Enum):
     def basic_scan_labels(cls):
         return list([
             cls.SCAN_HOST.value,
+        ])
+
+    @classmethod
+    def basic_host_scan_result_labels(cls):
+        return list([
+            cls.HOST.value,
+            cls.HOSTNAME.value,
+            cls.STATE.value,
         ])
 
 
@@ -64,8 +75,8 @@ class Metrics(object):
         MetricsLabels.nmap_instance_info_labels()
     )
 
-    NMAP_HOST_STATE = Gauge(
+    NMAP_SCANNED_HOST_STATE = Gauge(
         'nmap_scanned_host_state',
         'State for a nmap scanned host result',
-        MetricsLabels.nmap_instance_info_labels()
+        MetricsLabels.basic_host_scan_result_labels()
     )

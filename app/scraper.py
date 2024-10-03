@@ -22,16 +22,24 @@ class MissingIPListScraperException(ScraperException):
     pass
 
 
-def scan_host_callback(host, hostname, state):
-    pass
+def scraper_scan_host_callback(host, hostname, state):
+    log.debug(f'scan_host_callback => {host}, {hostname}, {state}')
+    Metrics.NMAP_SCANNED_HOST_STATE.labels(
+        host=host,
+        hostname=hostname or "",
+        state=state,
+    ).set(1)
 
 
 class Scraper(object):
     @classmethod
     def get_client(cls, scan_host_callback=None):
         if not scan_host_callback:
-            scan_host_callback = scan_host_callback
-        return cls(NmapClient.get_client())
+            scan_host_callback = scraper_scan_host_callback
+        nmap_client = NmapClient.get_client(
+            scan_host_callback=scan_host_callback,
+        )
+        return cls(nmap_client)
 
     @classmethod
     def get_default_scrape_interval(cls):
@@ -66,7 +74,7 @@ class Scraper(object):
             with Metrics.SCRAPER_SCRAPE_SCAN_HOST_TIME.labels(
                 scan_host=scan_host,
             ).time():
-                log.info(f"nmap scanning scan_host: {scan_host}")
+                log.debug(f"nmap scanning scan_host: {scan_host}")
                 await self.nmap_client.scan(scan_host)
 
     async def scrape_local_scan_host(self):
