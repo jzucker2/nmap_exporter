@@ -55,12 +55,6 @@ class NmapClient(object):
             log.error(f'nmap trying to get version, got e: {e}')
             return (None, None)
 
-    def default_scanner_callback(self, host, scan_result):
-        log.info('+++++++++++++++++++++++++++++++++++++++')
-        log.info(f'default_scanner_callback => '
-                 f'host: {host}, scan_result: {scan_result}')
-        self._parse_scan_result(host, scan_result)
-
     @classmethod
     def _parse_scanned_host_result(cls, host, host_result):
         log.info(f'Host : {host} ({host_result.hostname()})')
@@ -84,6 +78,12 @@ class NmapClient(object):
         for host, host_result in all_hosts_results.items():
             log.info('----------------------------------------------------')
             cls._parse_scanned_host_result(host, host_result)
+
+    def default_scanner_callback(self, host, scan_result):
+        log.info('+++++++++++++++++++++++++++++++++++++++')
+        log.info(f'default_scanner_callback => '
+                 f'host: {host}, scan_result: {scan_result}')
+        self._parse_scan_result(host, scan_result)
 
     def _scan(self, host, port_range=None):
         if not port_range:
