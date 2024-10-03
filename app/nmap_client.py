@@ -39,9 +39,10 @@ class NmapClient(object):
         return int(os.environ.get('NMAP_DEFAULT_SCAN_TIMEOUT_SECONDS',
                                   600))
 
-    def __init__(self, scan_host_callback=None):
+    def __init__(self, scan_host_callback=None, scan_port_callback=None):
         super().__init__()
         self._scan_host_callback = scan_host_callback
+        self._scan_port_callback = scan_port_callback
         self._scanner = PortScannerAsync()
 
     @property
@@ -56,16 +57,17 @@ class NmapClient(object):
             log.error(f'nmap trying to get version, got e: {e}')
             return (None, None)
 
-    @classmethod
-    def _parse_scanned_host_proto_result(cls, host, host_result, proto):
+    def _parse_scanned_host_proto_result(self, host, host_result, proto):
         log.info('----------')
         log.info(f'({host} => Protocol : {proto}')
-        lport = host_result[proto].keys()
+        lport = list(host_result[proto].keys())
         log.info(f'{host}->{proto} lport: {lport}')
         lport.sort()
         for port in lport:
             port_state = host_result[proto][port]['state']
             log.info(f'port : {port}\tstate : {port_state}')
+            if self._scan_port_callback:
+                self._scan_port_callback(host, proto, port, port_state)
 
     def _parse_scanned_host_result(self, host, host_result):
         hostname = host_result.hostname()
