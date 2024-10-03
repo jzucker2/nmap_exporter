@@ -60,6 +60,7 @@ class NmapClient(object):
         log.info('----------')
         log.info(f'({host} => Protocol : {proto}')
         lport = host_result[proto].keys()
+        log.info(f'{host}->{proto} lport: {lport}')
         lport.sort()
         for port in lport:
             port_state = host_result[proto][port]['state']
@@ -69,6 +70,7 @@ class NmapClient(object):
     def _parse_scanned_host_result(cls, host, host_result):
         log.info(f'Host : {host} ({host_result.hostname()})')
         log.info(f'State : {host_result.state()}')
+        log.info(f'{host} => {host_result.all_protocols()}')
         for proto in host_result.all_protocols():
             try:
                 cls._parse_scanned_host_proto_result(
@@ -88,6 +90,7 @@ class NmapClient(object):
         for host, host_result in all_hosts_results.items():
             log.debug('----------------------------------------------------')
             cls._parse_scanned_host_result(host, host_result)
+            log.info(f'done with scanned host: {host}')
 
     def default_scanner_callback(self, host, scan_result):
         log.debug('+++++++++++++++++++++++++++++++++++++++')
