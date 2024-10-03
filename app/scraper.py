@@ -12,6 +12,9 @@ log = LogHelper.get_env_logger(__name__)
 DEFAULT_NMAP_SCRAPE_INTERVAL_SECONDS = int(os.environ.get(
     'DEFAULT_NMAP_SCRAPE_INTERVAL_SECONDS',
     1800))
+DEFAULT_NMAP_FIRST_WAIT_SECONDS = int(os.environ.get(
+    'DEFAULT_NMAP_FIRST_WAIT_SECONDS',
+    300))
 
 
 class ScraperException(Exception):
@@ -61,6 +64,10 @@ class Scraper(object):
     @classmethod
     def get_default_scrape_interval(cls):
         return int(DEFAULT_NMAP_SCRAPE_INTERVAL_SECONDS)
+
+    @classmethod
+    def get_default_wait_first_interval(cls):
+        return int(DEFAULT_NMAP_FIRST_WAIT_SECONDS)
 
     def __init__(self, nmap_client):
         self._nmap_client = nmap_client
