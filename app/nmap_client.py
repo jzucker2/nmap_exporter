@@ -82,7 +82,7 @@ class NmapClient(object):
     def default_scanner_callback(self, host, scan_result):
         log.debug('+++++++++++++++++++++++++++++++++++++++')
         log.debug(f'default_scanner_callback => '
-                 f'host: {host}, scan_result: {scan_result}')
+                  f'host: {host}, scan_result: {scan_result}')
         self._parse_scan_result(host, scan_result)
 
     def _scan(self, host, port_range=None):
