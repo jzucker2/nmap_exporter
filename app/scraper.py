@@ -31,11 +31,12 @@ def scraper_scan_host_callback(host, hostname, state):
     ).set(1)
 
 
-def scraper_scan_port_callback(host, proto, port, port_state):
-    log.info(f'scan_port_callback => {host}, {proto}, {port}, {port_state}')
+def scraper_scan_port_callback(host, hostname, proto, port, port_state):
+    log.info(f'scan_port_callback => '
+             f'{host}, {hostname}, {proto}, {port}, {port_state}')
     Metrics.NMAP_SCANNED_PORT_STATE.labels(
         host=host,
-        # hostname=hostname or "",
+        hostname=hostname or "",
         protocol=proto,
         port=str(port),
         port_state=port_state,

@@ -40,6 +40,7 @@ class MetricsLabels(Enum):
     def basic_port_scan_result_labels(cls):
         return list([
             cls.HOST.value,
+            cls.HOSTNAME.value,
             cls.PROTOCOL.value,
             cls.PORT.value,
             cls.PORT_STATE.value,
