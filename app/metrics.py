@@ -10,6 +10,9 @@ class MetricsLabels(Enum):
     HOST = 'host'
     HOSTNAME = 'hostname'
     STATE = 'state'
+    PORT_STATE = 'port_state'
+    PROTOCOL = 'protocol'
+    PORT = 'port'
 
     @classmethod
     def nmap_instance_info_labels(cls):
@@ -31,6 +34,15 @@ class MetricsLabels(Enum):
             cls.HOST.value,
             cls.HOSTNAME.value,
             cls.STATE.value,
+        ])
+
+    @classmethod
+    def basic_port_scan_result_labels(cls):
+        return list([
+            cls.HOST.value,
+            cls.PROTOCOL.value,
+            cls.PORT.value,
+            cls.PORT_STATE.value,
         ])
 
 
@@ -79,4 +91,10 @@ class Metrics(object):
         'nmap_scanned_host_state',
         'State for a nmap scanned host result',
         MetricsLabels.basic_host_scan_result_labels()
+    )
+
+    NMAP_SCANNED_PORT_STATE = Gauge(
+        'nmap_scanned_port_state',
+        'State for a nmap scanned port result',
+        MetricsLabels.basic_port_scan_result_labels()
     )

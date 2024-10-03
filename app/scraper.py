@@ -23,7 +23,7 @@ class MissingIPListScraperException(ScraperException):
 
 
 def scraper_scan_host_callback(host, hostname, state):
-    log.debug(f'scan_host_callback => {host}, {hostname}, {state}')
+    log.info(f'scan_host_callback => {host}, {hostname}, {state}')
     Metrics.NMAP_SCANNED_HOST_STATE.labels(
         host=host,
         hostname=hostname or "",
@@ -31,13 +31,29 @@ def scraper_scan_host_callback(host, hostname, state):
     ).set(1)
 
 
+def scraper_scan_port_callback(host, proto, port, port_state):
+    log.info(f'scan_port_callback => {host}, {proto}, {port}, {port_state}')
+    Metrics.NMAP_SCANNED_PORT_STATE.labels(
+        host=host,
+        # hostname=hostname or "",
+        protocol=proto,
+        port=str(port),
+        port_state=port_state,
+    ).set(1)
+
+
 class Scraper(object):
     @classmethod
-    def get_client(cls, scan_host_callback=None):
+    def get_client(cls,
+                   scan_host_callback=None,
+                   scan_port_callback=None):
         if not scan_host_callback:
             scan_host_callback = scraper_scan_host_callback
+        if not scan_port_callback:
+            scan_port_callback = scraper_scan_port_callback
         nmap_client = NmapClient.get_client(
             scan_host_callback=scan_host_callback,
+            scan_port_callback=scan_port_callback,
         )
         return cls(nmap_client)
 

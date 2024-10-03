@@ -17,8 +17,11 @@ NmapVersionInfo = namedtuple(
 
 class NmapClient(object):
     @classmethod
-    def get_client(cls, scan_host_callback=None):
-        return cls(scan_host_callback=scan_host_callback)
+    def get_client(cls, scan_host_callback=None, scan_port_callback=None):
+        return cls(
+            scan_host_callback=scan_host_callback,
+            scan_port_callback=scan_port_callback,
+        )
 
     @classmethod
     def get_local_scan_host(cls):
