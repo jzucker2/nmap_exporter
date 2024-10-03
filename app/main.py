@@ -1,3 +1,5 @@
+from trace import Trace
+
 from fastapi import FastAPI
 from fastapi_utils.tasks import repeat_every
 from .version import version
@@ -59,8 +61,9 @@ async def prometheus_default():
     return {"message": "Hello World"}
 
 
+# https://fastapi-utils.davidmontague.xyz/user-guide/repeated-tasks/
 @app.on_event("startup")
-@repeat_every(seconds=Scraper.get_default_scrape_interval())
+@repeat_every(seconds=Scraper.get_default_scrape_interval(), wait_first=True)
 async def perform_full_routine_metrics_scrape() -> None:
     log.debug(f"Starting perform_full_scrape of all metrics "
               f"(interval: {Scraper.get_default_scrape_interval()}) "
