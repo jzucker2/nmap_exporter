@@ -1,5 +1,3 @@
-from trace import Trace
-
 from fastapi import FastAPI
 from fastapi_utils.tasks import repeat_every
 from .version import version
