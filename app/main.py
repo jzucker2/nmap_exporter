@@ -64,6 +64,8 @@ async def prometheus_default():
 @repeat_every(
     seconds=Scraper.get_default_scrape_interval(),
     wait_first=Scraper.get_default_wait_first_interval(),
+    logger=log,
+    
 )
 async def perform_full_routine_metrics_scrape() -> None:
     log.info(f"Starting perform_full_scrape of all metrics "
