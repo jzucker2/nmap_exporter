@@ -2,6 +2,7 @@ services:
 
   nmap_exporter:
     container_name: nmap_exporter
+#    image: ghcr.io/jzucker2/nmap_exporter:pr-5
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,8 +10,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      - DEBUG=true
-      - WLED_IP_LIST=10.0.1.129,10.0.1.150,10.0.1.179,10.0.1.153
+#      - DEBUG=true
+      - NMAP_DEFAULT_SCAN_HOST=10.0.1.0/24
     ports:
       - "9292:9292"
     stdin_open: true
