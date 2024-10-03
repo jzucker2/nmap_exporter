@@ -74,21 +74,21 @@ class NmapClient(object):
                   f'and scan_result ({type(scan_result)}) '
                   f'=> scan_result: {scan_result}')
         all_hosts_results = scan_result["scan"]
-        log.info(f'parsing all_hosts_results: {all_hosts_results}')
+        log.debug(f'parsing all_hosts_results: {all_hosts_results}')
         for host, host_result in all_hosts_results.items():
-            log.info('----------------------------------------------------')
+            log.debug('----------------------------------------------------')
             cls._parse_scanned_host_result(host, host_result)
 
     def default_scanner_callback(self, host, scan_result):
-        log.info('+++++++++++++++++++++++++++++++++++++++')
-        log.info(f'default_scanner_callback => '
+        log.debug('+++++++++++++++++++++++++++++++++++++++')
+        log.debug(f'default_scanner_callback => '
                  f'host: {host}, scan_result: {scan_result}')
         self._parse_scan_result(host, scan_result)
 
     def _scan(self, host, port_range=None):
         if not port_range:
             port_range = self.get_nmap_default_scan_port_range()
-        log.info(f'Going to scan host: {host} with port_range: {port_range}')
+        log.debug(f'Going to scan host: {host} with port_range: {port_range}')
         self.scanner.scan(
             hosts=host,
             ports=port_range,
@@ -96,9 +96,9 @@ class NmapClient(object):
             callback=self.default_scanner_callback,
         )
         while self.scanner.still_scanning():
-            log.info("Scanner waiting >>>")
+            log.debug("Scanner waiting >>>")
             self.scanner.wait(2)
-        log.info('scanner is done!')
+        log.debug('scanner is done!')
 
     async def scan(self, scan_host):
         """Don't overcomplicate this one. Simple usage like the dep docs"""
@@ -106,19 +106,19 @@ class NmapClient(object):
         Metrics.NMAP_CLIENT_SCAN_HOST_COUNTER.labels(
             scan_host=scan_host,
         ).inc()
-        log.info(f"nmap scanning scan_host: {scan_host}")
+        log.debug(f"nmap scanning scan_host: {scan_host}")
         self._scan(scan_host)
 
     async def scan_default_host(self):
         """Don't overcomplicate this one. Simple usage like the dep docs"""
         scan_host = self.get_nmap_default_scan_host()
-        log.info(f"nmap scanning default scan_host: {scan_host}")
+        log.debug(f"nmap scanning default scan_host: {scan_host}")
         await self.scan(scan_host)
 
     async def scan_local_host(self):
         """Don't overcomplicate this one. Simple usage like the dep docs"""
         scan_host = self.get_local_scan_host()
-        log.info(f"nmap scanning local scan_host: {scan_host}")
+        log.debug(f"nmap scanning local scan_host: {scan_host}")
         await self.scan(scan_host)
 
     async def simple_scan_test(self):
@@ -128,5 +128,5 @@ class NmapClient(object):
         Metrics.NMAP_CLIENT_SIMPLE_TEST_COUNTER.labels(
             scan_host=scan_host,
         ).inc()
-        log.info(f"nmap simple scan test scanning scan_host: {scan_host}")
+        log.debug(f"nmap simple scan test scanning scan_host: {scan_host}")
         await self.scan_default_host()
