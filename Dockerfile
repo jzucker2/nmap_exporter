@@ -1,6 +1,6 @@
 # https://fastapi.tiangolo.com/deployment/docker/
 # TODO: update and pin python version
-FROM python:3.12 AS builder
+FROM python:3.13 AS builder
 
 # TODO: Is this the best workdir?
 WORKDIR /code
@@ -11,7 +11,7 @@ COPY ./requirements.txt /code/requirements.txt
 # This looks good
 RUN pip wheel --no-deps --wheel-dir /code/wheels -r /code/requirements.txt
 
-FROM python:3.12-slim AS runner
+FROM python:3.13-slim AS runner
 
 RUN apt-get update -y && apt-get install -y \
         curl \
