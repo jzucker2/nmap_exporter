@@ -14,7 +14,7 @@ DEFAULT_NMAP_SCRAPE_INTERVAL_SECONDS = int(os.environ.get(
     1800))
 DEFAULT_NMAP_FIRST_WAIT_SECONDS = int(os.environ.get(
     'DEFAULT_NMAP_FIRST_WAIT_SECONDS',
-    300))
+    5))
 
 
 class ScraperException(Exception):
@@ -76,6 +76,9 @@ class Scraper(object):
     def nmap_client(self):
         return self._nmap_client
 
+    def get_nmap_default_scan_host(self):
+        return self.nmap_client.get_nmap_default_scan_host()
+
     def scrape_self(self):
         with Metrics.SCRAPER_SCRAPE_SELF_EXCEPTIONS.count_exceptions():
             with Metrics.SCRAPER_SCRAPE_SELF_TIME.time():
@@ -106,12 +109,15 @@ class Scraper(object):
         await self.scrape_scan_host(scan_host)
 
     async def scrape_default_scan_host(self):
-        scan_host = self.nmap_client.get_nmap_default_scan_host()
+        scan_host = self.get_nmap_default_scan_host()
         await self.scrape_scan_host(scan_host)
 
     async def perform_full_scrape(self):
         # first scrape self info for this app
         log.debug('perform_full_scrape')
+        Metrics.SCRAPER_START_FULL_SCRAPE_COUNTER.labels(
+            scan_host=self.get_nmap_default_scan_host(),
+        ).inc()
         self.scrape_self()
         log.debug('done with scrape self now scrape default scan host')
         # then scrape all wled instances

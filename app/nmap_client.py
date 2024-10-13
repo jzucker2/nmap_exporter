@@ -1,7 +1,7 @@
 import asyncio
 import os
 from collections import namedtuple
-from nmap import PortScanner
+from nmap import PortScannerAsync
 from .utils import LogHelper
 from .metrics import Metrics
 
@@ -46,15 +46,15 @@ class NmapClient(object):
         super().__init__()
         self._scan_host_callback = scan_host_callback
         self._scan_port_callback = scan_port_callback
-        self._scanner = PortScanner()
+        self._scanner = PortScannerAsync()
 
     @property
-    def scanner(self) -> PortScanner:
+    def scanner(self) -> PortScannerAsync:
         return self._scanner
 
     def get_version(self) -> NmapVersionInfo:
         try:
-            version, subversion = self.scanner.nmap_version()
+            version, subversion = self.scanner._nm.nmap_version()
             return NmapVersionInfo(str(version), str(subversion))
         except Exception as e:
             log.error(f'nmap trying to get version, got e: {e}')
@@ -106,28 +106,33 @@ class NmapClient(object):
                   f'and scan_result ({type(scan_result)}) '
                   f'=> scan_result: {scan_result}')
         all_hosts_results = scan_result["scan"]
-        log.debug(f'parsing all_hosts_results: {all_hosts_results}')
+        log.info(f'parsing all_hosts_results: {all_hosts_results}')
         for host, host_result in all_hosts_results.items():
             log.debug('----------------------------------------------------')
             self._parse_scanned_host_result(host, host_result)
             log.info(f'done with scanned host: {host}')
 
     def default_scanner_callback(self, host, scan_result):
-        log.debug('+++++++++++++++++++++++++++++++++++++++')
-        log.debug(f'default_scanner_callback => '
-                  f'host: {host}, scan_result: {scan_result}')
+        log.info('+++++++++++++++++++++++++++++++++++++++')
+        c_m = f'default_scanner_callback => '\
+              f'host: {host}, scan_result: {scan_result}'
+        log.info(c_m)
         self._parse_scan_result(host, scan_result)
 
     def _scan(self, host, port_range=None):
         if not port_range:
             port_range = self.get_nmap_default_scan_port_range()
         log.debug(f'Going to scan host: {host} with port_range: {port_range}')
-        scan_result = self.scanner.scan(
+        if self.scanner.still_scanning():
+            log.info('scanner still scanning, do not start a new one')
+            return
+        self.scanner.scan(
             hosts=host,
             ports=port_range,
             timeout=self.get_nmap_default_scan_timeout_seconds(),
+            callback=self.default_scanner_callback,
         )
-        self._parse_scan_result(host, scan_result)
+        # self._parse_scan_result(host, scan_result)
         log.debug('scanner is done!')
 
     async def scan(self, scan_host):

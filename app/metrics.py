@@ -60,6 +60,12 @@ class Metrics(object):
         MetricsLabels.basic_scan_labels()
     )
 
+    SCRAPER_START_FULL_SCRAPE_COUNTER = Counter(
+        'nmap_scraper_start_full_scrape_total',
+        'Count of times the scraper starts a full scrape',
+        MetricsLabels.basic_scan_labels()
+    )
+
     SCRAPER_SCRAPE_SCAN_HOST_EXCEPTIONS = Counter(
         'nmap_scraper_scrape_scan_host_exceptions_total',
         'Counts any exceptions attempting to scrape a scan host',
