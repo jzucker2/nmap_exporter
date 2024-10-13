@@ -122,4 +122,7 @@ class Scraper(object):
         log.debug('done with scrape self now scrape default scan host')
         # then scrape all wled instances
         await self.scrape_default_scan_host()
+        Metrics.SCRAPER_FINISH_FULL_SCRAPE_COUNTER.labels(
+            scan_host=self.get_nmap_default_scan_host(),
+        ).inc()
         log.debug('done with scraping default scan host')
