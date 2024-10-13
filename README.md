@@ -22,7 +22,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      - WLED_IP_LIST=10.0.1.1,10.0.1.2,10.0.1.3
+      - NMAP_DEFAULT_SCAN_HOST=10.0.0.1/24
     ports:
       - "9292:9292"
     stdin_open: true
@@ -33,11 +33,14 @@ services:
 
 By default, logging is info level. To set to debug, provide the env `DEBUG=true` flag
 
-|                   Env Var Name                   | Default Value | Example Value |                               Description                               |
-|:------------------------------------------------:|:-------------:|:-------------:|:-----------------------------------------------------------------------:|
-|                     `DEBUG`                      |    `false`    |    `true`     |          This determines debug logging and a few other things           |
-|      `DEFAULT_NMAP_SCRAPE_INTERVAL_SECONDS`      |     `60`      |     `30`      | This determines how often to scrape prometheus metrics from `nmap` scan |
-|                `NMAP_SCAN_HOST`                  |    `None`     | `10.0.0.1/24` |          This is the ip range of addresses to scan and scrape           |
+|                        Env Var Name                         | Default Value | Example Value |                               Description                               |
+|:-----------------------------------------------------------:|:-------------:|:-------------:|:-----------------------------------------------------------------------:|
+|                           `DEBUG`                           |    `false`    |    `true`     |          This determines debug logging and a few other things           |
+|           `DEFAULT_NMAP_SCRAPE_INTERVAL_SECONDS`            |     `180`     |     `300`     | This determines how often to scrape prometheus metrics from `nmap` scan |
+|              `DEFAULT_NMAP_FIRST_WAIT_SECONDS`              |     `300`     |     `300`     | This determines how often to scrape prometheus metrics from `nmap` scan |
+|             `NMAP_DEFAULT_SCAN_TIMEOUT_SECONDS`             |     `300`     |     `60`      |        This determines how long before a timeout on `nmap` scan         |
+|                  `NMAP_DEFAULT_SCAN_HOST`                   | `10.0.0.1/24` | `10.0.1.0/24` |          This is the ip range of addresses to scan and scrape           |
+|               `NMAP_DEFAULT_SCAN_PORT_RANGE`                |   `22-443`    |   `22-443`    |       This is the port range of host addresses to scan and scrape       |
 
 ## Prometheus
 

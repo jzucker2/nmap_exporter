@@ -5,17 +5,45 @@ from prometheus_client import Gauge, Counter, Summary
 class MetricsLabels(Enum):
     SCAN_HOST = 'scan_host'
     VERSION = 'version'
+    NMAP_VERSION = 'nmap_version'
+    NMAP_SUBVERSION = 'nmap_subversion'
+    HOST = 'host'
+    HOSTNAME = 'hostname'
+    STATE = 'state'
+    PORT_STATE = 'port_state'
+    PROTOCOL = 'protocol'
+    PORT = 'port'
 
     @classmethod
     def nmap_instance_info_labels(cls):
         return list([
             cls.VERSION.value,
+            cls.NMAP_VERSION.value,
+            cls.NMAP_SUBVERSION.value,
         ])
 
     @classmethod
     def basic_scan_labels(cls):
         return list([
             cls.SCAN_HOST.value,
+        ])
+
+    @classmethod
+    def basic_host_scan_result_labels(cls):
+        return list([
+            cls.HOST.value,
+            cls.HOSTNAME.value,
+            cls.STATE.value,
+        ])
+
+    @classmethod
+    def basic_port_scan_result_labels(cls):
+        return list([
+            cls.HOST.value,
+            cls.HOSTNAME.value,
+            cls.PROTOCOL.value,
+            cls.PORT.value,
+            cls.PORT_STATE.value,
         ])
 
 
@@ -29,6 +57,18 @@ class Metrics(object):
     NMAP_CLIENT_SCAN_HOST_COUNTER = Counter(
         'nmap_client_scan_host_total',
         'Count of times the nmap client scans host',
+        MetricsLabels.basic_scan_labels()
+    )
+
+    SCRAPER_START_FULL_SCRAPE_COUNTER = Counter(
+        'nmap_scraper_start_full_scrape_total',
+        'Count of times the scraper starts a full scrape',
+        MetricsLabels.basic_scan_labels()
+    )
+
+    SCRAPER_FINISH_FULL_SCRAPE_COUNTER = Counter(
+        'nmap_scraper_finish_full_scrape_total',
+        'Count of times the scraper finishes a full scrape',
         MetricsLabels.basic_scan_labels()
     )
 
@@ -58,4 +98,16 @@ class Metrics(object):
         'nmap_instance_info',
         'Details about the actual nmap scraper instance (this app)',
         MetricsLabels.nmap_instance_info_labels()
+    )
+
+    NMAP_SCANNED_HOST_STATE = Gauge(
+        'nmap_scanned_host_state',
+        'State for a nmap scanned host result',
+        MetricsLabels.basic_host_scan_result_labels()
+    )
+
+    NMAP_SCANNED_PORT_STATE = Gauge(
+        'nmap_scanned_port_state',
+        'State for a nmap scanned port result',
+        MetricsLabels.basic_port_scan_result_labels()
     )
